@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GitStream By Ethyrnal</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<style>
+body {
+  margin: 0;
+  background: #0a0a0a;
+  font-family: "Inter", system-ui, sans-serif;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Main Container */
+.container {
+  background: #111;
+  padding: 30px;
+  border-radius: 12px;
+  width: 500px;
+  text-align: center;
+  border: 1px solid #1f1f1f;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Title */
+h1 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  text-align: center;
+}
+
+/* Inputs & Select & Button unified height */
+input, select, button {
+  width: 100%;
+  height: 42px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid #1f1f1f;
+  background: #0f0f0f;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+input, select {
+  outline: none;
+}
+
+button {
+  background: #4f46e5;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+button:hover {
+  background: #6366f1;
+  transform: translateY(-2px);
+}
+
+/* Converted Link Style */
+.output {
+  background: #0f0f0f;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #1f1f1f;
+  word-break: break-word;
+}
+
+.output a {
+  color: #60a5fa;
+  text-decoration: none;
+  display: block;
+}
+
+/* Floating Source Code Button */
+.source-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #0f0f0f;
+  border: 1px solid #1f1f1f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  z-index: 1000;
+}
+
+.source-btn:hover {
+  background: #1a1a1a;
+}
+
+.source-btn i {
+  color: #e4e4e7;
+  font-size: 24px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>GitStream</h1>
+  <input type="text" id="githubLink" placeholder="Paste GitHub file link here...">
+  <select id="cdnSelect">
+      <option value="jsdelivr">jsDelivr</option>
+      <option value="statically">Statically</option>
+      <option value="staticdelivr">StaticDelivr</option>
+      <option value="githack-dev">GitHack (Development)</option>
+      <option value="githack-prod">GitHack (Production)</option>
+      <option value="githubraw">GithubRaw (Development)</option>
+      <option value="githubraw-cdn">GithubRaw (Production)</option>
+      <option value="rawgit">Rawgit (Development)</option>
+      <option value="rawgit-cdn">Rawgit (Production)</option>
+      <option value="jsdelivr-fyi">jsDelivr v2</option>
+      <option value="cdn-2ooly">2ooly</option>
+      <option value="corecontentnet">Core Content Net</option>
+      <option value="cdn-tricksbystg">Tricks By STG</option>
+      <option value="codetabs">Codetabs</option>
+      <option value="gh-proxy-net">GH Proxy v1</option>
+      <option value="gh-proxy-org">GH Proxy v2</option>
+  </select>
+
+  <button onclick="convert()">Convert</button>
+
+  <div class="output" id="output"></div>
+</div>
+
+<!-- Floating GitHub Source Code Button -->
+<div class="source-btn" onclick="window.open('https://github.com/HyperFloppik/GitStream/', '_blank')">
+  <i class="fab fa-github"></i>
+</div>
+
+<script>
+const customCdns = {
+    "cdn-2ooly": "https://cdn.2ooly.com",
+    "corecontentnet": "https://corecontentnet.com/files/cdn.jsdelivr.net",
+    "cdn-tricksbystg": "https://cdn.tricksbystg.org"
+};
+
+function parseGithubLink(input) {
+    let user, repo, branch, filePath;
+    if (input.includes("github.com")) {
+        const parts = input.split("/");
+        user = parts[3]; repo = parts[4]; branch = parts[6];
+        filePath = parts.slice(7).join("/");
+    } else if (input.includes("raw.githubusercontent.com")) {
+        const parts = input.split("/");
+        user = parts[3]; repo = parts[4]; branch = parts[5];
+        filePath = parts.slice(6).join("/");
+    } else {
+        return null;
+    }
+    if (!user || !repo || !branch || !filePath) return null;
+    return { user, repo, branch, filePath };
+}
+
+function convert() {
+    const input = document.getElementById("githubLink").value.trim();
+    const output = document.getElementById("output");
+    const cdn = document.getElementById("cdnSelect").value;
+
+    const data = parseGithubLink(input);
+    if (!data && !["codetabs","gh-proxy-net","gh-proxy-org"].includes(cdn)) {
+        output.innerHTML = "❌ Invalid GitHub link.";
+        return;
+    }
+
+    let result;
+    switch (cdn) {
+        case "jsdelivr":
+            result = `https://cdn.jsdelivr.net/gh/${data.user}/${data.repo}@${data.branch}/${data.filePath}`;
+            break;
+        case "statically":
+            result = `https://cdn.statically.io/gh/${data.user}/${data.repo}/${data.branch}/${data.filePath}`;
+            break;
+        case "staticdelivr":
+            result = `https://cdn.staticdelivr.com/gh/${data.user}/${data.repo}@${data.branch}/${data.filePath}`;
+            break;
+        case "githack-dev":
+            result = `https://raw.githack.com/${data.user}/${data.repo}/${data.branch}/${data.filePath}`;
+            break;
+        case "githack-prod":
+            result = `https://rawcdn.githack.com/${data.user}/${data.repo}/${data.branch}/${data.filePath}`;
+            break;
+        case "githubraw":
+            result = `https://githubraw.com/${data.user}/${data.repo}/${data.branch}/${data.filePath}`;
+            break;
+        case "githubraw-cdn":
+            result = `https://cdn.githubraw.com/${data.user}/${data.repo}/${data.branch}/${data.filePath}`;
+            break;
+        case "rawgit":
+            result = `https://raw.rawgit.net/${data.user}/${data.repo}/${data.branch}/${data.filePath}`;
+            break;
+        case "rawgit-cdn":
+            result = `https://rawcdn.rawgit.net/${data.user}/${data.repo}/${data.branch}/${data.filePath}`;
+            break;
+        case "jsdelivr-fyi":
+            result = `https://cdn.jsdelivr.fyi/gh/${data.user}/${data.repo}@${data.branch}/${data.filePath}`;
+            break;
+        case "codetabs":
+            result = `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(input)}`;
+            break;
+        case "gh-proxy-net":
+            result = `https://gh-proxy.net/${input}`;
+            break;
+        case "gh-proxy-org":
+            result = `https://gh-proxy.org/${input}`;
+            break;
+        default:
+            const base = customCdns[cdn];
+            result = `${base}/gh/${data.user}/${data.repo}@${data.branch}/${data.filePath}`;
+            break;
+    }
+
+    // Output without arrow
+    output.innerHTML = `<a href="${result}" target="_blank">${result}</a>`;
+}
+</script>
+
+</body>
+</html>
